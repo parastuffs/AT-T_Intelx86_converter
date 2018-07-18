@@ -17,6 +17,8 @@ import re
 def toATT(inputString):
 
     commentBlock = False
+    tab = 0 # Number of tabulations at line beginning
+    isLabel = False
 
     # print inputString
     with open("testfile.att", "r") as f:
@@ -30,17 +32,20 @@ def toATT(inputString):
     for i in range(len(lines)):
         line = lines[i]
         line = line.strip()
+        isLabel = False
 
         # Comment block detection
         if line[0] + line[1] == "/*":
             commentBlock = True
             # print line
-        if "*/" in line:
-            commentBlock = False
 
         if not commentBlock:
             if "__asm__" in line:
                 line = "__asm{"
+                tab += 1
+            if line == ");":
+                line = "}"
+                tab -= 1
             # Remove the '%'
             line = re.sub(r'%', '', line)
             # line = re.sub(r'%%?(?P<reg>\w{3,4})', '\g<reg>', line)
@@ -53,23 +58,38 @@ def toATT(inputString):
             line = re.sub(r'\)', ']', line)
 
             tokens = line.split(' ')
+
+            # If two parameters are glued together with a comma, split them.
             if len(tokens) > 1 and re.search(',.+', tokens[1]):
-                print tokens[1]
+                # print tokens[1]
                 subtokens = tokens[1].split(',')
                 tokens[1] = subtokens[0]
                 tokens.insert(2, subtokens[1])
-                print tokens
+                # print tokens
+
             # If there are two arguments and the second one is not a comment.
             if len(tokens) > 2 and not re.search('^\/\/|^\/\*', tokens[2]):
                 tmp = tokens[1]
-                tokens[1] = tokens[2]
-                tokens[2] = tmp
-                print tokens
+                tokens[1] = tokens[2] + ","
+                tokens[2] = re.sub(r'(?P<arg>.*),$', '\g<arg>', tmp) + ";"
+                # print tokens
+            if re.search(':$', tokens[0]):
+                isLabel = True
+
+            # Merge tokens back
+            line = ' '.join(tokens)
+            # print line
+
+        if "*/" in line:
+            commentBlock = False
 
 
-
-
-        lines[i] = line
+        if isLabel:
+            tab -= 1
+        lines[i] = "\t"*tab + line
+        if isLabel:
+            tab += 1
+        print lines[i]
 
 
 
