@@ -8,5 +8,5 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [ ] If there are comments, simply copy them.
 - [ ] Manage the clobbers.
 - [ ] Add a GUI.
-- [ ] Add tabulations for readability.
-- [ ] Add ';' add the end of the line.
+- [x] Add tabulations for readability.
+- [x] Add ';' add the end of the line.
