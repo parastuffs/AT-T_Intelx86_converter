@@ -1,0 +1,30 @@
+__asm__(
+        "mov %[in],%%rsi\n" // Test comment
+        /* If I want my register to hold a 32-bit integer (and standard int type),
+        I should use the ecx register (which is 32 bits).
+        If I use the rcx (64 bits), I will only set the 32 low order bits, leading
+        to a wrong counter.
+        */
+        "movl %4, %%ecx\n"
+        "mov %[out], %%rdx\n"
+    "loop1:\n"
+        /* You can't write directly into the xmm registers.
+        You need to go through the eax, ebx, etc.
+        */
+        "movdqu (%%rsi), %%xmm1\n"
+        "movdqu %%xmm1, (%%rdx)\n"
+        /* One address is 8 bits and the xmm registers are 128-bit.
+        Increment the address pointer by 16 to go fetch the next
+        128 bits of data.
+        */
+        "add $16, %%rsi\n"
+        "add $16, %%rdx\n"
+        "sub $16, %%rcx\n"
+    /* If the counter reach 0, stop jumping.
+    Warning: this works only if the image size modulo 16 is 0.
+    */
+    "jnz loop1\n"
+        :"=m"(pixelsIn), "=m"(pixelsOut)//outputs
+        :[in]"m" (pixelsIn), [out]"m" (pixelsOut), [size]"m" (imgSize)//inputs
+        :"%rsi", "%ecx", "%rdx", "%xmm1"//clobbers
+    );
