@@ -20,8 +20,10 @@ def toATT(inputString):
     tab = 0 # Number of tabulations at line beginning
     isLabel = False
     clobbersCount = 0
+    clobberLine = 0
     variables = dict()
     label = ""
+    index = ""
 
     # print inputString
     with open("testfile.att", "r") as f:
@@ -44,28 +46,31 @@ def toATT(inputString):
         # If clobber line.
         if re.search('^:', line):
             del lines[i]
-            clobbersCount += 1
+            clobberLine += 1
             # If third clobber line, skip it.
-            if clobbersCount == 3:
+            if clobberLine == 3:
                 continue
             else:
                 # print line
                 line = re.sub(r'((\/\/)|(\/\*)).*', '', line) # Remove comments at the end of the line
                 # print line
                 tokens = line.split(',')
-                for j, token in enumerate(tokens):
+                for token in tokens:
+                    label = ""
                     # Search for a label
                     match = re.search('\[(\w+)\]', token)
                     if match:
                         label = match.group(1)
-                    else:
-                        label = str(clobbersCount - 1 + j)
+                    index = str(clobbersCount)
                     # Search for the variable name
                     match = re.search('\((\w+)\)', token)
                     if match:
-                        variables[label] = match.group(1)
+                        if label != "":
+                            variables[label] = match.group(1)
+                        variables[index] = match.group(1)
                     else:
                         print("Error, could not find variable name.")
+                    clobbersCount += 1
 
         else:
             i += 1
@@ -98,7 +103,7 @@ def toATT(inputString):
                 line = "}"
                 tab -= 1
             # Remove the '%'
-            line = re.sub(r'%', '', line)
+            line = re.sub(r'%?%(?P<reg>[a-zA-Z]+)', '\g<reg>', line)
             line = re.sub(r'"', '', line)
             line = re.sub(r'\\n', '', line)
 
@@ -106,6 +111,15 @@ def toATT(inputString):
             line = re.sub(r'\$(?P<imm>\d+)', '\g<imm>', line)
             line = re.sub(r'\(', '[', line)
             line = re.sub(r'\)', ']', line)
+
+            # Change the aliases with the true variable name.
+            for k in variables:
+                pattern = '%\[?' + k + '\]?'
+                # print("Pattern: {}".format(pattern))
+                if re.search(pattern, line):
+                    line = re.sub(pattern, variables[k], line)
+
+
 
             tokens = line.split(' ')
 
@@ -139,7 +153,7 @@ def toATT(inputString):
         lines[i] = "\t"*tab + line
         if isLabel:
             tab += 1
-        # print lines[i]
+        print lines[i]
 
 
 
