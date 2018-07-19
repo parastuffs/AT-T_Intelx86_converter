@@ -14,7 +14,7 @@ Options:
 from docopt import docopt
 import re
 
-def toATT(inputString):
+def toIntel(inputString):
 
     commentBlock = False
     tab = 0 # Number of tabulations at line beginning
