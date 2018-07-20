@@ -15,8 +15,18 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [ ] When parsing the clobbers, detect comment blocks.
 - [x] Replace the variable names based on the clobbers info.
 - [x] Manage offsets
+- [x] Manage comments sticked with the argument.
+- [x] To ATT: Substract the set of labels from the set of variables.
+- [ ] To ATT: Manage instructions with a single argument.
 
 
 ## Notes
 
-- In AT&amp;T, clobber lines should begin with a ':'.
+### AT&T syntax
+
+- Clobber lines should begin with a ':'.
+
+
+### Intel syntax
+
+- Lines should end with ';', except labels.
