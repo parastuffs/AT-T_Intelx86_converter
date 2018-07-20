@@ -29,7 +29,6 @@ def toIntel(inputString):
     with open("testfile.att", "r") as f:
         inputString = f.read()
 
-    # print inputString
     # First, split the input string in lines
     lines = inputString.splitlines()
 
@@ -51,9 +50,7 @@ def toIntel(inputString):
             if clobberLine == 3:
                 continue
             else:
-                # print line
                 line = re.sub(r'((\/\/)|(\/\*)).*', '', line) # Remove comments at the end of the line
-                # print line
                 tokens = line.split(',')
                 for token in tokens:
                     label = ""
@@ -75,16 +72,7 @@ def toIntel(inputString):
         else:
             i += 1
 
-    # print variables
 
-
-
-
-
-
-
-    # print lines
-    # Remove extra spaces and tabulations
     for i in range(len(lines)):
         line = lines[i]
         line = line.strip()
@@ -93,7 +81,6 @@ def toIntel(inputString):
         # Comment block detection
         if line[0] + line[1] == "/*":
             commentBlock = True
-            # print line
 
         if not commentBlock:
             if "__asm__" in line:
@@ -104,7 +91,9 @@ def toIntel(inputString):
                 tab -= 1
             # Remove the '%'
             line = re.sub(r'%?%(?P<reg>[a-zA-Z]+)', '\g<reg>', line)
+            # Remove quotes
             line = re.sub(r'"', '', line)
+            # Remove explicit \n
             line = re.sub(r'\\n', '', line)
 
             # Those should only be applied on instructions parameters to void facking up any hypothetical comment.
@@ -115,14 +104,12 @@ def toIntel(inputString):
             # Change the aliases with the true variable name.
             for k in variables:
                 pattern = '%\[?' + k + '\]?'
-                # print("Pattern: {}".format(pattern))
                 if re.search(pattern, line):
                     line = re.sub(pattern, variables[k], line)
 
-
-
             tokens = line.split(' ')
 
+            # Translate the offset
             for i in range(len(tokens)):
                 token = tokens[i]
                 token = re.sub(r'(?P<offset>\-\d+)\[(?P<var>\w+)\]', '[\g<var>\g<offset>]', token)
@@ -131,37 +118,32 @@ def toIntel(inputString):
 
             # If two parameters are glued together with a comma, split them.
             if len(tokens) > 1 and re.search(',.+', tokens[1]):
-                # print tokens[1]
                 subtokens = tokens[1].split(',')
                 tokens[1] = subtokens[0]
                 tokens.insert(2, subtokens[1])
-                # print tokens
 
             # If there are two arguments and the second one is not a comment, swap them.
             if len(tokens) > 2 and not re.search('^\/\/|^\/\*', tokens[2]):
                 tmp = tokens[1]
                 tokens[1] = tokens[2] + ","
                 tokens[2] = re.sub(r'(?P<arg>.*),$', '\g<arg>', tmp) + ";"
-                # print tokens
             if re.search(':$', tokens[0]):
                 isLabel = True
 
             # Merge tokens back
             line = ' '.join(tokens)
-            # print line
 
+        # End of comment block detection
         if "*/" in line:
             commentBlock = False
 
-
+        # Highlight the label by shifting them to the left.
         if isLabel:
             tab -= 1
         lines[i] = "\t"*tab + line
         if isLabel:
             tab += 1
         print lines[i]
-
-
 
     # print lines
 
