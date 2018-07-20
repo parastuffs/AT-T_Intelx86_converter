@@ -123,6 +123,12 @@ def toIntel(inputString):
 
             tokens = line.split(' ')
 
+            for i in range(len(tokens)):
+                token = tokens[i]
+                token = re.sub(r'(?P<offset>\-\d+)\[(?P<var>\w+)\]', '[\g<var>\g<offset>]', token)
+                token = re.sub(r'(?P<offset>\d+)\[(?P<var>\w+)\]', '[\g<var>+\g<offset>]', token)
+                tokens[i] = token
+
             # If two parameters are glued together with a comma, split them.
             if len(tokens) > 1 and re.search(',.+', tokens[1]):
                 # print tokens[1]
