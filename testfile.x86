@@ -1,0 +1,20 @@
+__asm 
+{
+	mov esi, source;               
+	mov edi, destination;           
+	mov ecx, counter;              
+	mov eax, THREESHOLD;            
+	movapd xmm7, eax;               
+	
+	boucle:
+		movapd xmm0,[esi+12];
+		movapd xmm0, [esi];
+		PCMPGTB xmm0, xmm7; 
+		PCMPEQB xmm1, xmm1;// Whole xmm1 reg set to 1's
+		PANDN   xmm0, xmm1;  // xmm0 = NOT(xmm0) AND xmm1, thus it's a NOT(xmm0)
+		movapd [edi-2], xmm0; // Move result to memory destination 
+		add edi, 16;        // Move destination to its 16 next bytes
+		add esi, 16;        // Move source to its 16 next bytes
+		loop boucle;
+	emms;					// For compatibility reasons
+}

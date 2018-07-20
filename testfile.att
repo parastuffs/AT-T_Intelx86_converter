@@ -11,7 +11,8 @@ __asm__(
         /* You can't write directly into the xmm registers.
         You need to go through the eax, ebx, etc.
         */
-        "movdqu (%%rsi), %%xmm1\n"
+        "movdqu 14(%%rsi), %%xmm1\n"
+        "movdqu -1(%%rsi), %%xmm1\n"
         "movdqu %%xmm1, (%%rdx)\n"
         /* One address is 8 bits and the xmm registers are 128-bit.
         Increment the address pointer by 16 to go fetch the next
