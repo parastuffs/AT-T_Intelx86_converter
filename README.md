@@ -14,6 +14,7 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [ ] Use Rest API for issues.
 - [ ] When parsing the clobbers, detect comment blocks.
 - [x] Replace the variable names based on the clobbers info.
+- [x] Manage offsets
 
 
 ## Notes
