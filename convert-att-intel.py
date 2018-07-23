@@ -14,6 +14,13 @@ Options:
 from docopt import docopt
 import re
 from sets import Set
+try:
+    # Python 2
+    import Tkinter as tk
+except ImportError:
+    # Python 3
+    import tkinter as tk
+
 
 # Register names pattern
 registers = ["xmm\d", "[re][abcds][ix]"]
@@ -28,6 +35,7 @@ def toIntel(inputString):
     variables = dict()
     label = ""
     index = ""
+    outputString = ""
 
     # print inputString
     with open("testfile.att", "r") as f:
@@ -148,8 +156,10 @@ def toIntel(inputString):
         if isLabel:
             tab += 1
         print lines[i]
+        outputString += lines[i] + "\n"
 
-    # print lines
+    return outputString
+
 
 
 
@@ -166,6 +176,7 @@ def toATT(inputString):
     regUsed = Set() # Set of registers used.
     varUsed = Set() # Set of variables used.
     labelUsed = Set() # Set of labels.
+    outputString = ""
 
     # print inputString
     with open("testfile.x86", "r") as f:
@@ -296,6 +307,7 @@ def toATT(inputString):
         if isLabel:
             tab += 1
         print lines[i]
+        
 
 
 
@@ -323,17 +335,87 @@ def toATT(inputString):
             for reg in regUsed:
                 clobLine += '"%%' + reg + '", '
             lines.insert(i-1, clobLine)
+        outputString += lines[i] + "\n"
+
+
+
+    return outputString
 
 
 
 
-            break
 
 
-    # for line in lines:
-    #     print line
+
+class Gui(tk.Frame):
+
+    def __init__(self, top, **kwargs):
+        tk.Frame.__init__(self, top, **kwargs)
+        self.pack()
+
+        # Paned window
+        self.p = tk.PanedWindow(self, orient=tk.VERTICAL)
+
+        # Radio buttons
+        self.fRadioButtons = tk.LabelFrame(self.p, width=500, text="Choose the conversion")
+        self.fRadioButtons.pack(fill=tk.X)
+
+        self.convChoice = tk.StringVar()
+        self.rbToATT = tk.Radiobutton(self.fRadioButtons, text="Intel x86 -> AT&T", variable=self.convChoice, value="toATT")
+        self.rbToIntel = tk.Radiobutton(self.fRadioButtons, text="AT&T -> Intel x86", variable=self.convChoice, value="toIntel")
+        self.rbToATT.pack()
+        self.rbToIntel.pack()
+
+        self.p.add(self.fRadioButtons)
+
+        # Input text frame
+        self.fInput = tk.Frame(self.p)
+        self.p.add(self.fInput)
+
+        # Scrollbar
+        self.scrollbarIn = tk.Scrollbar(self.fInput)
+        self.scrollbarIn.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Input text box
+        self.tInput = tk.Text(self.fInput, yscrollcommand=self.scrollbarIn.set)
+        self.tInput.pack()
+
+        # Output text frame
+        self.fOutput = tk.Frame(self.p)
+        self.p.add(self.fOutput)
+
+        # Scrollbar
+        self.scrollbarOut = tk.Scrollbar(self.fOutput)
+        self.scrollbarOut.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Input text box
+        self.tOutput = tk.Text(self.fOutput, yscrollcommand=self.scrollbarOut.set)
+        self.tOutput.pack()
+
+        # Conversion button
+        self.bConvert = tk.Button(self.p, text="Convert", command=self.convert)
+        self.p.add(self.bConvert)
 
 
+        self.p.pack(fill=tk.X)
+
+
+    def convert(self):
+        inputString = self.tInput.get("1.0",'end-1c')
+        outputString = ""
+        # print inputString
+        convType = self.convChoice.get()
+        if convType == "":
+            # Raise an alert
+            pass
+        elif convType == "toATT":
+            outputString = toATT(inputString)
+        elif convType == "toIntel":
+            outputString = toIntel(inputString)
+
+        self.tOutput.delete("1.0", tk.END)
+        # print outputString
+        self.tOutput.insert("1.0", outputString)
 
 
 
@@ -365,3 +447,8 @@ if __name__ == '__main__':
         toATT(inputString)
     elif isToIntel:
         toIntel(inputString)
+
+    window = tk.Tk()
+    gui = Gui(window)
+
+    gui.mainloop()
