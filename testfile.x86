@@ -15,6 +15,7 @@ __asm
 		movapd [edi-2], xmm0; // Move result to memory destination 
 		add edi, 16;        // Move destination to its 16 next bytes
 		add esi, 16;        // Move source to its 16 next bytes
+		dec esi;
 		loop boucle;
 	emms;					// For compatibility reasons
 }
