@@ -19,8 +19,10 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [x] To ATT: Substract the set of labels from the set of variables.
 - [ ] To ATT: Manage instructions with a single argument.
 - [ ] Pre-fill gui based on cli arguments.
-- [ ] Add cli argument for no-gui execution.
+- [x] Add cli argument for no-gui execution.
 - [ ] Add 'clear' button.
+- [ ] Add a title and an icon to the window.
+- [ ] Scale boxes with window.
 
 
 ## Notes
