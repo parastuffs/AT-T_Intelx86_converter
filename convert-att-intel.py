@@ -474,6 +474,9 @@ if __name__ == '__main__':
         toIntel(inputString)
     else:
         window = tk.Tk()
+        window.title("Assembly converter")
+        imgicon = tk.PhotoImage(file='app.gif')
+        window.tk.call('wm', 'iconphoto', window._w, imgicon)  
         gui = Gui(window)
 
         gui.mainloop()
