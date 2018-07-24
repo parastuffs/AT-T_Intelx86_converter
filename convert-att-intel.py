@@ -38,8 +38,8 @@ def toIntel(inputString):
     outputString = ""
 
     # print inputString
-    with open("testfile.att", "r") as f:
-        inputString = f.read()
+    # with open("testfile.att", "r") as f:
+    #     inputString = f.read()
 
     # First, split the input string in lines
     lines = inputString.splitlines()
@@ -179,8 +179,8 @@ def toATT(inputString):
     outputString = ""
 
     # print inputString
-    with open("testfile.x86", "r") as f:
-        inputString = f.read()
+    # with open("testfile.x86", "r") as f:
+    #     inputString = f.read()
 
     # First, split the input string in lines
     lines = inputString.splitlines()
@@ -198,7 +198,7 @@ def toATT(inputString):
         if not commentBlock:
 
             if "emms;" in line:
-                continue
+                line = "\n"
 
             line = re.sub(r';', '\\\\n"', line)
 
@@ -210,19 +210,10 @@ def toATT(inputString):
                 tab -= 1
                 line = re.sub(r'\}', ');', line)
 
-            # # Remove the '%'
-            # line = re.sub(r'%?%(?P<reg>[a-zA-Z]+)', '\g<reg>', line)
-
 
             # Those should only be applied on instructions parameters to void facking up any hypothetical comment.
             # line = re.sub(r'\$(?P<imm>\d+)', '\g<imm>', line)
             line = re.sub(r'\[(?P<var>[\w+\-]+)\]', '(\g<var>)', line)
-
-            # # Change the aliases with the true variable name.
-            # for k in variables:
-            #     pattern = '%\[?' + k + '\]?'
-            #     if re.search(pattern, line):
-            #         line = re.sub(pattern, variables[k], line)
 
             tokens = re.split('\s+', line)
 
@@ -240,14 +231,14 @@ def toATT(inputString):
                 tokens.insert(2, subtokens[1])
 
             # If a comment is glued to the argument, space it.
-            for i in range(len(tokens)):
-                token = tokens[i]
+            for j in range(len(tokens)):
+                token = tokens[j]
                 match = re.search('^.+((\/\/)|(\/\*))', token)
                 if match:
                     # I assume there are only one match, hence two subtokens.
                     subtokens = token.split(match.group(1))
-                    tokens[i] = subtokens[0]
-                    tokens[i+1] = match.group(1) + subtokens[1]
+                    tokens[j] = subtokens[0]
+                    tokens[j+1] = match.group(1) + subtokens[1]
 
 
             # If there are two arguments and the second one is not a comment, swap them.
@@ -306,9 +297,8 @@ def toATT(inputString):
         lines[i] = "\t"*tab + line
         if isLabel:
             tab += 1
-        print lines[i]
-        
 
+        
 
 
     # Second pass: create the clobbers.
@@ -318,24 +308,27 @@ def toATT(inputString):
         if ");" in line:
             varUsed = varUsed.difference(regUsed)
             varUsed = varUsed.difference(labelUsed)
-            # print varUsed
 
-            # First clobber line
-            clobLine = ": // Outputs, please populate."
+            # Third clobber line
+            clobLine = ":"
+            for reg in regUsed:
+                clobLine += '"%%' + reg + '", '
+            clobLine = re.sub(r', $', '', clobLine)
             lines.insert(i-1, clobLine)
 
             # Second clobber line
             clobLine = ":"
             for var in varUsed:
                 clobLine += '[' + var + ']"m" (' + var + '), '
+            clobLine = re.sub(r', $', '', clobLine)
             lines.insert(i-1, clobLine)
 
-            # Third clobber line
-            clobLine = ":"
-            for reg in regUsed:
-                clobLine += '"%%' + reg + '", '
+            # First clobber line
+            clobLine = ": // Outputs, please populate."
             lines.insert(i-1, clobLine)
-        outputString += lines[i] + "\n"
+
+    for line in lines:
+        outputString += line + "\n"
 
 
 
