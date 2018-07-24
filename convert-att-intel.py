@@ -9,6 +9,8 @@ Options:
     -i --to-intel      Convert from AT&T to Intelx86
 
     -h --help          Print this help
+
+If neither -a nor -i are provided, the script starts a GUI.
 """
 
 from docopt import docopt
@@ -470,8 +472,8 @@ if __name__ == '__main__':
         toATT(inputString)
     elif isToIntel:
         toIntel(inputString)
+    else:
+        window = tk.Tk()
+        gui = Gui(window)
 
-    window = tk.Tk()
-    gui = Gui(window)
-
-    gui.mainloop()
+        gui.mainloop()
