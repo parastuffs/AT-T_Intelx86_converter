@@ -25,6 +25,15 @@ except ImportError:
 # Register names pattern
 registers = ["xmm\d", "[re][abcds][ix]"]
 
+
+##########    #####            ########   ##      ##  ##########  #########  ##         
+    ##      ##     ##             ##      ###     ##      ##      ##         ##         
+    ##      ##     ##             ##      ## ##   ##      ##      ##         ##         
+    ##      ##     ##             ##      ##  ##  ##      ##      ######     ##         
+    ##      ##     ##             ##      ##   ## ##      ##      ##         ##         
+    ##      ##     ##             ##      ##     ###      ##      ##         ##         
+    ##        #####    ####### ########   ##      ##      ##      #########  ######### 
+
 def toIntel(inputString):
 
     commentBlock = False
@@ -162,6 +171,15 @@ def toIntel(inputString):
 
 
 
+
+
+##########    #####               ###     ##########  ##########  
+    ##      ##     ##            ## ##        ##          ##      
+    ##      ##     ##           ##   ##       ##          ##      
+    ##      ##     ##          ##     ##      ##          ##      
+    ##      ##     ##          #########      ##          ##      
+    ##      ##     ##          ##     ##      ##          ##      
+    ##        #####    ####### ##     ##      ##          ##   
 
 def toATT(inputString):
 
@@ -338,7 +356,13 @@ def toATT(inputString):
 
 
 
-
+ #######   ##     ##  ########   
+##         ##     ##     ##      
+##         ##     ##     ##      
+##   ####  ##     ##     ##      
+##     ##  ##     ##     ##      
+##     ##  ##     ##     ##      
+########    #######   ########  
 
 class Gui(tk.Frame):
 
@@ -353,11 +377,17 @@ class Gui(tk.Frame):
         self.fRadioButtons = tk.LabelFrame(self.p, width=500, text="Choose the conversion")
         self.fRadioButtons.pack(fill=tk.X)
 
+        self.prb = tk.PanedWindow(self.fRadioButtons, orient=tk.HORIZONTAL)
+
         self.convChoice = tk.StringVar()
-        self.rbToATT = tk.Radiobutton(self.fRadioButtons, text="Intel x86 -> AT&T", variable=self.convChoice, value="toATT")
-        self.rbToIntel = tk.Radiobutton(self.fRadioButtons, text="AT&T -> Intel x86", variable=self.convChoice, value="toIntel")
+        self.rbToATT = tk.Radiobutton(self.prb, text="Intel x86 -> AT&T", variable=self.convChoice, value="toATT")
+        self.rbToIntel = tk.Radiobutton(self.prb, text="AT&T -> Intel x86", variable=self.convChoice, value="toIntel")
         self.rbToATT.pack()
         self.rbToIntel.pack()
+
+        self.prb.add(self.rbToATT)
+        self.prb.add(self.rbToIntel)
+        self.prb.pack()
 
         self.p.add(self.fRadioButtons)
 
