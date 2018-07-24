@@ -21,8 +21,9 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [ ] Pre-fill gui based on cli arguments.
 - [x] Add cli argument for no-gui execution.
 - [ ] Add 'clear' button.
-- [ ] Add a title and an icon to the window.
+- [x] Add a title and an icon to the window.
 - [ ] Scale boxes with window.
+- [ ] Add a 'copy to clipboard' button.
 
 
 ## Notes
