@@ -10,7 +10,7 @@ Converter between AT&amp;T and Intelx86 syntaxes for assembly and SIMD.
 - [x] Add a GUI.
 - [x] Add tabulations for readability.
 - [x] Add ';' add the end of the line.
-- [ ] Link to the issues page in case the output is wrong.
+- [x] Link to the issues page in case the output is wrong.
 - [ ] Use Rest API for issues.
 - [ ] When parsing the clobbers, detect comment blocks.
 - [x] Replace the variable names based on the clobbers info.
