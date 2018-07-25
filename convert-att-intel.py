@@ -22,7 +22,7 @@ try:
 except ImportError:
     # Python 3
     import tkinter as tk
-
+import webbrowser
 
 # Register names pattern
 registers = ["xmm\d", "[re][abcds][ix]"]
@@ -364,7 +364,10 @@ def toATT(inputString):
 ##   ####  ##     ##     ##      
 ##     ##  ##     ##     ##      
 ##     ##  ##     ##     ##      
-########    #######   ########  
+########    #######   ########
+
+def callback(event):
+    webbrowser.open_new(r"https://github.com/parastuffs/AT-T_Intelx86_converter/issues")
 
 class Gui(tk.Frame):
 
@@ -420,6 +423,12 @@ class Gui(tk.Frame):
         # Conversion button
         self.bConvert = tk.Button(self.p, text="Convert", command=self.convert)
         self.p.add(self.bConvert)
+
+        # Issue hyperlink
+        self.link = tk.Label(self.p, text="Not what you expected? File an issue on Github.", fg="blue", cursor="hand2")
+        self.link.pack()
+        self.link.bind("<Button-1>", callback)
+        self.p.add(self.link)
 
 
         self.p.pack(fill=tk.X)
