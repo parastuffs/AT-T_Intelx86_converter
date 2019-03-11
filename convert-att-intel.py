@@ -23,6 +23,7 @@ except ImportError:
     # Python 3
     import tkinter as tk
 import webbrowser
+import pyperclip
 
 # Register names pattern
 registers = ["xmm\d", "[re][abcds][ix]"]
@@ -298,7 +299,7 @@ def toATT(inputString):
                 match = re.search('(?P<label>\w+):$', tokens[0])
                 if match:
                     labelUsed.add(match.group(1))
-                tokens[0] += "\\n"
+                tokens[0] += "\\n\""
 
             # Merge tokens back
             line = ' '.join(tokens)
@@ -420,9 +421,19 @@ class Gui(tk.Frame):
         self.tOutput = tk.Text(self.fOutput, yscrollcommand=self.scrollbarOut.set)
         self.tOutput.pack()
 
+        # # Buttons panel
+        # self.pb = tk.PanedWindow(self.p, orient=tk.HORIZONTAL)
+        # # Conversion button
+        # self.bConvert = tk.Button(self.pb, text="Convert", command=self.convert)
+        # self.pb.add(self.bConvert)
+        # self.bCopy = tk.Button(self.pb, text="Copy to clipboard", command=self.copyCB)
+        # self.pb.add(self.bCopy)
+        # self.p.add(self.pb)
+
         # Conversion button
         self.bConvert = tk.Button(self.p, text="Convert", command=self.convert)
         self.p.add(self.bConvert)
+
 
         # Issue hyperlink
         self.link = tk.Label(self.p, text="Not what you expected? File an issue on Github.", fg="blue", cursor="hand2")
@@ -450,6 +461,10 @@ class Gui(tk.Frame):
         self.tOutput.delete("1.0", tk.END)
         # print outputString
         self.tOutput.insert("1.0", outputString)
+
+    def copyCB(self):
+        outputStr = self.tInput.get("1.0",'end-1c')
+        pyperclip.copy(outputStr)
 
 
 
